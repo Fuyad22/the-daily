@@ -19,6 +19,7 @@ export default async function StudioLayout({ children }: { children: ReactNode }
             <>
               <NavLink href="/studio/categories">Categories</NavLink>
               <NavLink href="/studio/tags">Tags</NavLink>
+              <NavLink href="/studio/comments">Comments</NavLink>
             </>
           )}
           {user.role === "admin" && <NavLink href="/studio/users">Users</NavLink>}

@@ -6,6 +6,7 @@ import { getCurrentUser } from "@/lib/auth/dal";
 import { hasPremiumAccess } from "@/lib/subscriptions/access";
 import { formatArticleDate } from "@/lib/format";
 import { buttonVariants } from "@/components/ui/button";
+import { CommentSection } from "@/components/comments/comment-section";
 
 export async function generateMetadata({
   params,
@@ -35,6 +36,7 @@ export default async function ArticlePage({
   const unlocked = article.isPremium ? await hasPremiumAccess(user) : true;
 
   return (
+    <>
     <article className="mx-auto max-w-2xl px-6 py-12">
       <header className="mb-8 flex flex-col gap-4">
         <Link
@@ -107,5 +109,7 @@ export default async function ArticlePage({
         </div>
       )}
     </article>
+    {unlocked && <CommentSection articleId={article.id} />}
+    </>
   );
 }
