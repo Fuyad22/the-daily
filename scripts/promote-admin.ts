@@ -1,9 +1,7 @@
-import { config } from "dotenv";
-
-config({ path: ".env.local" });
+import "@/db/load-env";
 
 import { eq } from "drizzle-orm";
-import { db } from "@/db";
+import { db } from "@/db/standalone";
 import { user } from "@/db/schema";
 
 const email = process.argv[2];

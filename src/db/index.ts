@@ -1,17 +1,16 @@
 import "server-only";
-import { Pool, neonConfig } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-serverless";
-import ws from "ws";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 import * as schema from "./schema";
-
-neonConfig.webSocketConstructor = ws;
 
 if (!process.env.DATABASE_URL) {
   throw new Error(
-    "DATABASE_URL is not set. Copy .env.example to .env.local and add your Neon connection string."
+    "DATABASE_URL is not set. Copy .env.example to .env.local and add your Postgres connection string."
   );
 }
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+// Disabled for compatibility with connection poolers (e.g. Supabase's
+// Supavisor); harmless for a direct/local connection too.
+const client = postgres(process.env.DATABASE_URL, { prepare: false });
 
-export const db = drizzle(pool, { schema });
+export const db = drizzle(client, { schema });

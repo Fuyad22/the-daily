@@ -14,7 +14,6 @@
     "promote-admin": "tsx scripts/promote-admin.ts"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.1.0",
     "@tiptap/core": "^3.31.3",
     "@tiptap/extension-image": "^3.31.3",
     "@tiptap/extension-link": "^3.31.3",
@@ -29,13 +28,13 @@
     "drizzle-orm": "^0.45.2",
     "happy-dom": "^20.14.5",
     "next": "16.3.5",
+    "postgres": "^3.4.9",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "resend": "^6.28.0",
     "sanitize-html": "^2.17.7",
     "server-only": "^0.0.1",
     "stripe": "^22.6.2",
-    "ws": "^8.21.3",
     "zod": "^4.6.4"
   },
   "devDependencies": {
@@ -45,7 +44,6 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/sanitize-html": "^2.16.1",
-    "@types/ws": "^8.18.1",
     "dotenv": "^17.4.2",
     "drizzle-kit": "^0.31.10",
     "eslint": "^9",

@@ -1,8 +1,6 @@
-import { config } from "dotenv";
+import "./load-env";
 
-config({ path: ".env.local" });
-
-import { db } from "./index";
+import { db } from "./standalone";
 import { categories, tags } from "./schema";
 
 const SEED_CATEGORIES = [

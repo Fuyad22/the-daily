@@ -8,7 +8,7 @@ A production-quality newspaper platform: article CMS, public reader site, Stripe
 
 - Next.js 16 (App Router, Turbopack), React 19, TypeScript
 - Tailwind v4 (CSS-first config, see `src/app/globals.css`)
-- Postgres (Neon) via Drizzle ORM
+- Postgres via Drizzle ORM
 - Better Auth for accounts/roles
 - Stripe for subscriptions
 - Tiptap for article authoring
