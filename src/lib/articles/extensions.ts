@@ -7,6 +7,7 @@ import Link from "@tiptap/extension-link";
 export const articleExtensions = [
   StarterKit.configure({
     heading: { levels: [2, 3, 4] },
+    link: false,
   }),
   Image,
   Link.configure({ openOnClick: false, autolink: true }),
