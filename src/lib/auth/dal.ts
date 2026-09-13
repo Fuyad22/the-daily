@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { cache } from "react";
 import { auth, type Role } from "@/lib/auth";
 
+export type { Role };
+
 export const getCurrentUser = cache(async () => {
   const session = await auth.api.getSession({ headers: await headers() });
   return session?.user ?? null;
