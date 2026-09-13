@@ -26,11 +26,15 @@ const title = "The Daily";
 const description = "Independent daily reporting and analysis.";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.BETTER_AUTH_URL || "http://localhost:3000"),
   title: {
     default: title,
     template: `%s — ${title}`,
   },
   description,
+  alternates: {
+    types: { "application/rss+xml": "/rss.xml" },
+  },
   openGraph: {
     title,
     description,
