@@ -22,6 +22,9 @@ export default async function AccountPage() {
         <p className="mb-6 text-ink">{user.email}</p>
         <div className="flex items-center gap-3">
           <SignOutButton />
+          <Link href="/account/billing" className="text-sm font-semibold text-accent">
+            Billing
+          </Link>
           {role !== "reader" && (
             <Link href="/studio" className="text-sm font-semibold text-accent">
               Go to Studio →
