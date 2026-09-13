@@ -42,7 +42,7 @@ export function ArticleCard({
           />
         </div>
       )}
-      <div className="flex items-center gap-2 text-[12.5px] font-semibold uppercase tracking-wide text-accent">
+      <div className="label flex items-center gap-2 text-ink">
         {article.category && <span>{article.category.name}</span>}
         {article.isPremium && <span className="text-premium">· Premium</span>}
       </div>

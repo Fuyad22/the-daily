@@ -51,7 +51,7 @@ export function CategoryList({ categories }: { categories: Category[] }) {
           Add
         </Button>
       </div>
-      {error && <p className="text-sm text-accent">{error}</p>}
+      {error && <p className="text-sm text-danger">{error}</p>}
       <ul className="overflow-hidden rounded-xl border border-line bg-surface">
         {categories.map((category) => (
           <li

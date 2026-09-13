@@ -87,7 +87,7 @@ export function ArticleStatusControls({
           Delete
         </Button>
       )}
-      {error && <p className="w-full text-sm text-accent">{error}</p>}
+      {error && <p className="w-full text-sm text-danger">{error}</p>}
     </div>
   );
 }

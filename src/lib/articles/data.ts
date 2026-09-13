@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { desc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { articleAuthors, articles } from "@/db/schema";
@@ -29,11 +30,11 @@ export async function getArticleForEdit(id: string) {
   });
 }
 
-export async function listCategories() {
+export const listCategories = cache(async () => {
   return db.query.categories.findMany({
     orderBy: (category, { asc }) => asc(category.name),
   });
-}
+});
 
 export async function listTags() {
   return db.query.tags.findMany({

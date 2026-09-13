@@ -13,7 +13,7 @@ const COMMENT_STATUS_CONFIG: Record<CommentStatus, { label: string; className: s
   pending: { label: "Pending", className: "bg-premium-bg text-premium" },
   approved: { label: "Approved", className: "bg-[#e8f0ea] text-[#3f6b4a]" },
   rejected: { label: "Rejected", className: "bg-black/[0.06] text-muted" },
-  spam: { label: "Spam", className: "bg-accent/10 text-accent" },
+  spam: { label: "Spam", className: "bg-danger/10 text-danger" },
 };
 
 function Pill({ label, className }: { label: string; className: string }) {

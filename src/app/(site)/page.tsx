@@ -1,5 +1,6 @@
 import { listPublishedArticles } from "@/lib/articles/public";
 import { ArticleCard } from "@/components/site/article-card";
+import { HeadlineListItem } from "@/components/site/headline-list-item";
 
 export default async function HomePage() {
   const articles = await listPublishedArticles({ limit: 13 });
@@ -8,9 +9,7 @@ export default async function HomePage() {
   if (!featured) {
     return (
       <main className="flex min-h-[60vh] flex-col items-center justify-center gap-3 px-6 text-center">
-        <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-muted">
-          Est. 2026
-        </p>
+        <p className="label text-muted">Est. 2026</p>
         <h1 className="font-display text-5xl font-semibold tracking-tight text-ink">
           The Daily
         </h1>
@@ -21,15 +20,28 @@ export default async function HomePage() {
     );
   }
 
+  const secondary = rest.slice(0, 4);
+  const more = rest.slice(4);
+
   return (
     <main className="mx-auto max-w-6xl px-6 py-10">
-      <section className="mb-12">
-        <ArticleCard article={featured} size="large" />
+      <section className="grid grid-cols-1 gap-x-10 gap-y-10 border-b border-line pb-12 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <ArticleCard article={featured} size="large" />
+        </div>
+
+        {secondary.length > 0 && (
+          <div className="flex flex-col lg:border-l lg:border-line lg:pl-10">
+            {secondary.map((article) => (
+              <HeadlineListItem key={article.id} article={article} />
+            ))}
+          </div>
+        )}
       </section>
 
-      {rest.length > 0 && (
-        <section className="grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-          {rest.map((article) => (
+      {more.length > 0 && (
+        <section className="grid grid-cols-1 gap-x-8 gap-y-10 pt-12 sm:grid-cols-2 lg:grid-cols-3">
+          {more.map((article) => (
             <ArticleCard key={article.id} article={article} />
           ))}
         </section>

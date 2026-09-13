@@ -54,7 +54,7 @@ export function CommentForm({
         rows={3}
         required
       />
-      {error && <p className="text-sm text-accent">{error}</p>}
+      {error && <p className="text-sm text-danger">{error}</p>}
       <div>
         <Button type="submit" disabled={pending || !body.trim()}>
           {pending ? "Posting…" : parentId ? "Post reply" : "Post comment"}

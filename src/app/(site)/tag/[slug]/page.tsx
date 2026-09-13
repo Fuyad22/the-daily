@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getTagBySlug, listPublishedArticles } from "@/lib/articles/public";
 import { ArticleCard } from "@/components/site/article-card";
+import { ListingHeader } from "@/components/site/listing-header";
 
 export async function generateMetadata({
   params,
@@ -22,7 +23,7 @@ export default async function TagPage({ params }: { params: Promise<{ slug: stri
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-10">
-      <h1 className="mb-8 font-display text-3xl font-semibold text-ink">#{tag.name}</h1>
+      <ListingHeader eyebrow="Tag" title={tag.name} />
       {articles.length === 0 ? (
         <p className="text-muted">No articles tagged {tag.name} yet.</p>
       ) : (

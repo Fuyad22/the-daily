@@ -60,7 +60,7 @@ export function SignupForm() {
           required
         />
       </div>
-      {error && <p className="text-sm text-accent">{error}</p>}
+      {error && <p className="text-sm text-danger">{error}</p>}
       <Button type="submit" disabled={pending} className="mt-2">
         {pending ? "Creating account…" : "Create account"}
       </Button>

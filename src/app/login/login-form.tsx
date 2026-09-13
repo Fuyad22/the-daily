@@ -54,7 +54,7 @@ export function LoginForm() {
           required
         />
       </div>
-      {error && <p className="text-sm text-accent">{error}</p>}
+      {error && <p className="text-sm text-danger">{error}</p>}
       <Button type="submit" disabled={pending} className="mt-2">
         {pending ? "Signing in…" : "Sign in"}
       </Button>

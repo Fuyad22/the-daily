@@ -214,7 +214,7 @@ export function ArticleForm({
         </div>
       </details>
 
-      {error && <p className="text-sm text-accent">{error}</p>}
+      {error && <p className="text-sm text-danger">{error}</p>}
 
       <div>
         <Button onClick={handleSave} disabled={pending || !title || !categoryId}>

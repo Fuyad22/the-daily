@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { searchArticles } from "@/lib/articles/public";
 import { ArticleCard } from "@/components/site/article-card";
+import { ListingHeader } from "@/components/site/listing-header";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -17,7 +18,7 @@ export default async function SearchPage({
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-10">
-      <h1 className="mb-6 font-display text-3xl font-semibold text-ink">Search</h1>
+      <ListingHeader eyebrow="The Daily" title="Search" />
       <form action="/search" className="mb-10 flex gap-2">
         <Input name="q" defaultValue={query} placeholder="Search articles…" autoFocus />
         <Button type="submit">Search</Button>
@@ -29,9 +30,11 @@ export default async function SearchPage({
         </p>
       )}
 
-      <section className="flex flex-col gap-8">
+      <section className="flex flex-col divide-y divide-line">
         {articles.map((article) => (
-          <ArticleCard key={article.id} article={article} />
+          <div key={article.id} className="py-8 first:pt-0">
+            <ArticleCard article={article} />
+          </div>
         ))}
       </section>
     </main>

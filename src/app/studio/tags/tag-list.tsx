@@ -51,7 +51,7 @@ export function TagList({ tags, canDelete }: { tags: Tag[]; canDelete: boolean }
           Add
         </Button>
       </div>
-      {error && <p className="text-sm text-accent">{error}</p>}
+      {error && <p className="text-sm text-danger">{error}</p>}
       <div className="flex flex-wrap gap-2">
         {tags.map((tag) => (
           <span

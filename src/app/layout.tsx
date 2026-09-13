@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import { Fraunces, Source_Serif_4, Inter } from "next/font/google";
+import { Domine, Source_Serif_4, Libre_Franklin } from "next/font/google";
 import "./globals.css";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+const domine = Domine({
+  variable: "--font-domine",
   subsets: ["latin"],
   weight: ["500", "600", "700"],
-  style: ["normal", "italic"],
 });
 
 const sourceSerif = Source_Serif_4({
@@ -16,8 +15,8 @@ const sourceSerif = Source_Serif_4({
   style: ["normal", "italic"],
 });
 
-const inter = Inter({
-  variable: "--font-inter",
+const libreFranklin = Libre_Franklin({
+  variable: "--font-libre-franklin",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
@@ -52,7 +51,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${sourceSerif.variable} ${inter.variable}`}
+      className={`${domine.variable} ${sourceSerif.variable} ${libreFranklin.variable}`}
     >
       <body className="min-h-screen bg-paper font-sans text-ink antialiased">
         {children}
