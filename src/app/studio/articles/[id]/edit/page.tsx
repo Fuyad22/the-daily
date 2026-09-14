@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { requireRole } from "@/lib/auth/dal";
 import { getArticleForEdit, listCategories, listTags } from "@/lib/articles/data";
+import { isBlobConfigured } from "@/lib/blob";
 import { ArticleForm } from "@/components/editor/article-form";
 import { ArticleStatusControls } from "@/components/editor/article-status-controls";
 
@@ -34,6 +35,7 @@ export default async function EditArticlePage({
         articleId={article.id}
         categories={categories}
         tags={tags}
+        canUploadImages={isBlobConfigured()}
         initial={{
           title: article.title,
           dek: article.dek ?? undefined,

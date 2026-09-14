@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { TiptapEditor } from "./tiptap-editor";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/cn";
 import { createArticle, updateArticle, type ArticleInput } from "@/lib/articles/actions";
+import { uploadImage } from "@/lib/media/actions";
 
 type Category = { id: string; name: string };
 type Tag = { id: string; name: string };
@@ -19,16 +20,20 @@ export function ArticleForm({
   initial,
   categories,
   tags,
+  canUploadImages = false,
 }: {
   mode: "create" | "edit";
   articleId?: string;
   initial?: Partial<ArticleInput>;
   categories: Category[];
   tags: Tag[];
+  canUploadImages?: boolean;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [uploadingHero, setUploadingHero] = useState(false);
+  const heroFileInputRef = useRef<HTMLInputElement>(null);
 
   const [title, setTitle] = useState(initial?.title ?? "");
   const [dek, setDek] = useState(initial?.dek ?? "");
@@ -46,6 +51,25 @@ export function ArticleForm({
 
   function toggleTag(id: string) {
     setTagIds((prev) => (prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]));
+  }
+
+  async function handleHeroFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+
+    setUploadingHero(true);
+    setError(null);
+    const formData = new FormData();
+    formData.set("file", file);
+    const result = await uploadImage(formData);
+    setUploadingHero(false);
+
+    if ("error" in result) {
+      setError(result.error);
+      return;
+    }
+    setHeroImageUrl(result.url);
   }
 
   function handleSave() {
@@ -107,7 +131,11 @@ export function ArticleForm({
 
       <div className="flex flex-col gap-1.5">
         <Label>Content</Label>
-        <TiptapEditor content={initial?.contentJson as Record<string, unknown>} onChange={setContentJson} />
+        <TiptapEditor
+          content={initial?.contentJson as Record<string, unknown>}
+          onChange={setContentJson}
+          canUploadImages={canUploadImages}
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -165,12 +193,34 @@ export function ArticleForm({
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="heroImageUrl">Hero image URL</Label>
-          <Input
-            id="heroImageUrl"
-            value={heroImageUrl}
-            onChange={(e) => setHeroImageUrl(e.target.value)}
-            placeholder="https://…"
-          />
+          <div className="flex gap-2">
+            <Input
+              id="heroImageUrl"
+              value={heroImageUrl}
+              onChange={(e) => setHeroImageUrl(e.target.value)}
+              placeholder="https://…"
+            />
+            {canUploadImages && (
+              <>
+                <input
+                  ref={heroFileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  onChange={handleHeroFileChange}
+                />
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => heroFileInputRef.current?.click()}
+                  disabled={uploadingHero}
+                  className="shrink-0"
+                >
+                  {uploadingHero ? "Uploading…" : "Upload"}
+                </Button>
+              </>
+            )}
+          </div>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="heroImageAlt">Hero image alt text</Label>

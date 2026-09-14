@@ -1,16 +1,20 @@
 "use client";
 
+import { useRef, useState } from "react";
 import { useEditor, EditorContent, type Editor } from "@tiptap/react";
 import Placeholder from "@tiptap/extension-placeholder";
 import { articleExtensions } from "@/lib/articles/extensions";
+import { uploadImage } from "@/lib/media/actions";
 import { cn } from "@/lib/cn";
 
 export function TiptapEditor({
   content,
   onChange,
+  canUploadImages = false,
 }: {
   content?: Record<string, unknown>;
   onChange: (json: Record<string, unknown>) => void;
+  canUploadImages?: boolean;
 }) {
   const editor = useEditor({
     extensions: [
@@ -33,7 +37,7 @@ export function TiptapEditor({
 
   return (
     <div className="rounded-lg border border-black/15">
-      <Toolbar editor={editor} />
+      <Toolbar editor={editor} canUploadImages={canUploadImages} />
       <div className="px-4 py-3">
         <EditorContent editor={editor} />
       </div>
@@ -68,7 +72,28 @@ function ToolbarButton({
   );
 }
 
-function Toolbar({ editor }: { editor: Editor }) {
+function Toolbar({ editor, canUploadImages }: { editor: Editor; canUploadImages: boolean }) {
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.set("file", file);
+    const result = await uploadImage(formData);
+    setUploading(false);
+
+    if ("error" in result) {
+      window.alert(result.error);
+      return;
+    }
+    editor.chain().focus().setImage({ src: result.url }).run();
+  }
+
   return (
     <div className="flex flex-wrap items-center gap-1 border-b border-black/10 px-2 py-1.5">
       <ToolbarButton
@@ -145,9 +170,22 @@ function Toolbar({ editor }: { editor: Editor }) {
       >
         🔗
       </ToolbarButton>
+      {canUploadImages && (
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/gif"
+          className="hidden"
+          onChange={handleFileChange}
+        />
+      )}
       <ToolbarButton
-        label="Image"
+        label={uploading ? "Uploading…" : "Image"}
         onClick={() => {
+          if (canUploadImages) {
+            fileInputRef.current?.click();
+            return;
+          }
           const url = window.prompt("Image URL");
           if (!url) return;
           editor.chain().focus().setImage({ src: url }).run();
