@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { requireRole } from "@/lib/auth/dal";
+import { hasRoleAtLeast, requireRole, STAFF_ROLES } from "@/lib/auth/dal";
 import { listArticles } from "@/lib/articles/data";
 import { ArticleStatusPill } from "@/components/status-pill";
 import { buttonVariants } from "@/components/ui/button";
 
 export default async function StudioArticlesPage() {
-  const user = await requireRole(["author", "editor", "admin"]);
-  const isEditorial = user.role === "editor" || user.role === "admin";
+  const user = await requireRole(STAFF_ROLES);
+  const isEditorial = hasRoleAtLeast(user.role, "editor");
   const articles = await listArticles(isEditorial ? {} : { authorId: user.id });
 
   return (
@@ -40,6 +40,21 @@ export default async function StudioArticlesPage() {
                     >
                       {article.title || "Untitled"}
                     </Link>
+                    {article.featured === "lead" && (
+                      <span className="ml-2 rounded-full bg-accent/10 px-2 py-0.5 text-xs font-semibold text-accent">
+                        Top story
+                      </span>
+                    )}
+                    {article.featured === "headline" && (
+                      <span className="ml-2 rounded-full bg-accent/10 px-2 py-0.5 text-xs font-semibold text-accent">
+                        Headline
+                      </span>
+                    )}
+                    {article.isBreaking && (
+                      <span className="ml-2 rounded-full bg-danger/10 px-2 py-0.5 text-xs font-semibold text-danger">
+                        Breaking
+                      </span>
+                    )}
                   </td>
                   <td className="px-5 py-3">
                     <ArticleStatusPill status={article.status} />

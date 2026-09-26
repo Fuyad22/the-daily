@@ -71,6 +71,57 @@ export async function listPublishedArticles(
   });
 }
 
+/**
+ * Homepage feed: editors can pin one "lead" story and up to 4 "headline"
+ * stories (src/lib/articles/actions.ts enforces only one lead at a time).
+ * Unfilled slots — including the whole feed on a site with no manual
+ * placements yet — backfill from the normal reverse-chronological list, so
+ * curation is optional rather than something that has to be kept up to date.
+ */
+export async function getHomepageFeed() {
+  const HEADLINE_COUNT = 4;
+  const REST_COUNT = 8;
+
+  const [manualLead] = await db.query.articles.findMany({
+    where: and(publishedFilter(), eq(articles.featured, "lead")),
+    with: { category: true },
+    orderBy: (article, { desc }) => desc(article.publishedAt),
+    limit: 1,
+  });
+
+  const manualHeadlines = await db.query.articles.findMany({
+    where: and(publishedFilter(), eq(articles.featured, "headline")),
+    with: { category: true },
+    orderBy: (article, { desc }) => desc(article.publishedAt),
+    limit: HEADLINE_COUNT,
+  });
+
+  const usedIds = new Set(
+    [manualLead, ...manualHeadlines].filter((a) => a !== undefined).map((a) => a.id)
+  );
+
+  const chronological = await listPublishedArticles({
+    limit: 1 + HEADLINE_COUNT + REST_COUNT + usedIds.size,
+  });
+  const fillers = chronological.filter((article) => !usedIds.has(article.id));
+
+  const lead = manualLead ?? fillers.shift();
+  const headlines = [
+    ...manualHeadlines,
+    ...fillers.splice(0, HEADLINE_COUNT - manualHeadlines.length),
+  ];
+  const rest = fillers.slice(0, REST_COUNT);
+
+  return { lead, headlines, rest };
+}
+
+export const getBreakingArticle = cache(async () => {
+  return db.query.articles.findFirst({
+    where: and(publishedFilter(), eq(articles.isBreaking, true)),
+    orderBy: (article, { desc }) => desc(article.publishedAt),
+  });
+});
+
 export async function getCategoryBySlug(slug: string) {
   return db.query.categories.findFirst({ where: eq(categories.slug, slug) });
 }

@@ -23,6 +23,12 @@ export const articleStatusEnum = pgEnum("article_status", [
 ]);
 export type ArticleStatus = (typeof articleStatusEnum.enumValues)[number];
 
+// Manual homepage placement — null means "no editorial override, use
+// chronological order". Only one published article should hold "lead" at a
+// time; enforced in src/lib/articles/actions.ts, not at the DB level.
+export const articleFeaturedEnum = pgEnum("article_featured", ["lead", "headline"]);
+export type ArticleFeatured = (typeof articleFeaturedEnum.enumValues)[number];
+
 export const articles = pgTable("articles", {
   id: uuid("id").primaryKey().defaultRandom(),
   slug: text("slug").notNull().unique(),
@@ -35,6 +41,13 @@ export const articles = pgTable("articles", {
   heroImageAlt: text("hero_image_alt"),
   status: articleStatusEnum("status").notNull().default("draft"),
   isPremium: boolean("is_premium").notNull().default(false),
+  featured: articleFeaturedEnum("featured"),
+  isBreaking: boolean("is_breaking").notNull().default(false),
+  // Cached machine translation (Bengali) — null until a reader first requests
+  // it, and cleared on every edit in actions.ts so it never goes stale.
+  titleBn: text("title_bn"),
+  dekBn: text("dek_bn"),
+  contentHtmlBn: text("content_html_bn"),
   publishedAt: timestamp("published_at", { withTimezone: true }),
   categoryId: uuid("category_id")
     .notNull()

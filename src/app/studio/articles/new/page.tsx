@@ -1,10 +1,10 @@
-import { requireRole } from "@/lib/auth/dal";
+import { hasRoleAtLeast, requireRole, STAFF_ROLES } from "@/lib/auth/dal";
 import { listCategories, listTags } from "@/lib/articles/data";
 import { isBlobConfigured } from "@/lib/blob";
 import { ArticleForm } from "@/components/editor/article-form";
 
 export default async function NewArticlePage() {
-  await requireRole(["author", "editor", "admin"]);
+  const user = await requireRole(STAFF_ROLES);
   const [categories, tags] = await Promise.all([listCategories(), listTags()]);
 
   return (
@@ -15,6 +15,7 @@ export default async function NewArticlePage() {
         categories={categories}
         tags={tags}
         canUploadImages={isBlobConfigured()}
+        canCuratePlacement={hasRoleAtLeast(user.role, "editor")}
       />
     </div>
   );

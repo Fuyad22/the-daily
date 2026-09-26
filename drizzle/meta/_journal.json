@@ -15,6 +15,20 @@
       "when": 1789274629867,
       "tag": "0001_fantastic_onslaught",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789520028959,
+      "tag": "0002_right_absorbing_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1789520991505,
+      "tag": "0003_black_nebula",
+      "breakpoints": true
     }
   ]
 }

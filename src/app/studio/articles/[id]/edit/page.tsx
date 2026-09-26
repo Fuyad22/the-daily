@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { requireRole } from "@/lib/auth/dal";
+import { hasRoleAtLeast, requireRole, STAFF_ROLES } from "@/lib/auth/dal";
 import { getArticleForEdit, listCategories, listTags } from "@/lib/articles/data";
 import { isBlobConfigured } from "@/lib/blob";
 import { ArticleForm } from "@/components/editor/article-form";
@@ -11,12 +11,12 @@ export default async function EditArticlePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const user = await requireRole(["author", "editor", "admin"]);
+  const user = await requireRole(STAFF_ROLES);
   const article = await getArticleForEdit(id);
   if (!article) notFound();
 
   const isOwner = article.authors.some((a) => a.userId === user.id);
-  const isEditorial = user.role === "editor" || user.role === "admin";
+  const isEditorial = hasRoleAtLeast(user.role, "editor");
   if (!isEditorial && !isOwner) notFound();
 
   const [categories, tags] = await Promise.all([listCategories(), listTags()]);
@@ -36,6 +36,7 @@ export default async function EditArticlePage({
         categories={categories}
         tags={tags}
         canUploadImages={isBlobConfigured()}
+        canCuratePlacement={isEditorial}
         initial={{
           title: article.title,
           dek: article.dek ?? undefined,
@@ -46,6 +47,8 @@ export default async function EditArticlePage({
           categoryId: article.categoryId,
           tagIds: article.tags.map((t) => t.tagId),
           isPremium: article.isPremium,
+          featured: article.featured,
+          isBreaking: article.isBreaking,
           seoTitle: article.seoTitle ?? undefined,
           seoDescription: article.seoDescription ?? undefined,
         }}

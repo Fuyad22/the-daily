@@ -2,10 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import { db } from "@/db";
 import { articleAuthors, articles, articleTags, type ArticleStatus } from "@/db/schema";
-import { requireRole, type Role } from "@/lib/auth/dal";
+import { hasRoleAtLeast, requireRole, STAFF_ROLES, type Role } from "@/lib/auth/dal";
 import { renderArticleContent } from "./render";
 import { uniqueArticleSlug } from "./slug";
 
@@ -19,6 +19,8 @@ const articleInputSchema = z.object({
   categoryId: z.string().uuid("Choose a category."),
   tagIds: z.array(z.string().uuid()).max(10),
   isPremium: z.boolean(),
+  featured: z.enum(["lead", "headline"]).nullable().optional(),
+  isBreaking: z.boolean().optional(),
   seoTitle: z.string().trim().max(200).optional(),
   seoDescription: z.string().trim().max(300).optional(),
 });
@@ -37,10 +39,30 @@ function isOwnerOf(article: { authors: { userId: string }[] }, userId: string) {
   return article.authors.some((a) => a.userId === userId);
 }
 
+// Homepage placement is an editorial call — authors can create/edit their own
+// drafts but can't set or clear it, so this silently drops the fields instead
+// of erroring when a non-editorial user's input happens to include them.
+function editorialFields(role: Role, data: ArticleInput) {
+  if (!hasRoleAtLeast(role, "editor")) return {};
+  return { featured: data.featured ?? null, isBreaking: data.isBreaking ?? false };
+}
+
+// Only one published article should be the homepage lead at a time.
+async function clearOtherLeads(excludeId?: string) {
+  await db
+    .update(articles)
+    .set({ featured: null })
+    .where(
+      excludeId
+        ? and(eq(articles.featured, "lead"), ne(articles.id, excludeId))
+        : eq(articles.featured, "lead")
+    );
+}
+
 export async function createArticle(
   input: ArticleInput
 ): Promise<ActionResult<{ id: string }>> {
-  const user = await requireRole(["author", "editor", "admin"]);
+  const user = await requireRole(STAFF_ROLES);
   const parsed = articleInputSchema.safeParse(input);
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid article data." };
@@ -48,6 +70,10 @@ export async function createArticle(
   const data = parsed.data;
   const slug = await uniqueArticleSlug(data.title);
   const contentHtml = renderArticleContent(data.contentJson);
+  const fields = editorialFields(user.role, data);
+  if (fields.featured === "lead") {
+    await clearOtherLeads();
+  }
 
   const [article] = await db
     .insert(articles)
@@ -64,6 +90,7 @@ export async function createArticle(
       isPremium: data.isPremium,
       seoTitle: data.seoTitle || null,
       seoDescription: data.seoDescription || null,
+      ...fields,
     })
     .returning({ id: articles.id });
 
@@ -75,6 +102,7 @@ export async function createArticle(
   }
 
   revalidatePath("/studio/articles");
+  revalidatePath("/");
   return { id: article.id };
 }
 
@@ -82,13 +110,12 @@ export async function updateArticle(
   id: string,
   input: ArticleInput
 ): Promise<ActionResult> {
-  const user = await requireRole(["author", "editor", "admin"]);
+  const user = await requireRole(STAFF_ROLES);
   const existing = await loadArticleWithAuthors(id);
   if (!existing) return { error: "Article not found." };
 
   const canEdit =
-    user.role === "editor" ||
-    user.role === "admin" ||
+    hasRoleAtLeast(user.role, "editor") ||
     (isOwnerOf(existing, user.id) && (existing.status === "draft" || existing.status === "in_review"));
   if (!canEdit) return { error: "You don't have permission to edit this article." };
 
@@ -98,6 +125,10 @@ export async function updateArticle(
   }
   const data = parsed.data;
   const contentHtml = renderArticleContent(data.contentJson);
+  const fields = editorialFields(user.role, data);
+  if (fields.featured === "lead") {
+    await clearOtherLeads(id);
+  }
 
   await db
     .update(articles)
@@ -113,6 +144,12 @@ export async function updateArticle(
       isPremium: data.isPremium,
       seoTitle: data.seoTitle || null,
       seoDescription: data.seoDescription || null,
+      // Any edit invalidates the cached Bangla translation — it's
+      // re-generated on next request rather than left stale.
+      titleBn: null,
+      dekBn: null,
+      contentHtmlBn: null,
+      ...fields,
     })
     .where(eq(articles.id, id));
 
@@ -123,6 +160,7 @@ export async function updateArticle(
 
   revalidatePath("/studio/articles");
   revalidatePath(`/studio/articles/${id}/edit`);
+  revalidatePath("/");
   return { ok: true };
 }
 
@@ -133,7 +171,7 @@ function canTransition(
   isOwner: boolean
 ): boolean {
   if (from === to) return false;
-  if (role === "editor" || role === "admin") return true;
+  if (hasRoleAtLeast(role, "editor")) return true;
   if (role === "author" && isOwner) {
     return (
       (from === "draft" && to === "in_review") || (from === "in_review" && to === "draft")
@@ -146,7 +184,7 @@ export async function changeArticleStatus(
   id: string,
   status: ArticleStatus
 ): Promise<ActionResult> {
-  const user = await requireRole(["author", "editor", "admin"]);
+  const user = await requireRole(STAFF_ROLES);
   const existing = await loadArticleWithAuthors(id);
   if (!existing) return { error: "Article not found." };
 
@@ -165,13 +203,12 @@ export async function changeArticleStatus(
 }
 
 export async function deleteArticle(id: string): Promise<ActionResult> {
-  const user = await requireRole(["author", "editor", "admin"]);
+  const user = await requireRole(STAFF_ROLES);
   const existing = await loadArticleWithAuthors(id);
   if (!existing) return { error: "Article not found." };
 
   const canDelete =
-    user.role === "editor" ||
-    user.role === "admin" ||
+    hasRoleAtLeast(user.role, "editor") ||
     (isOwnerOf(existing, user.id) && existing.status === "draft");
   if (!canDelete) return { error: "You don't have permission to delete this article." };
 

@@ -21,6 +21,7 @@ export function ArticleForm({
   categories,
   tags,
   canUploadImages = false,
+  canCuratePlacement = false,
 }: {
   mode: "create" | "edit";
   articleId?: string;
@@ -28,6 +29,7 @@ export function ArticleForm({
   categories: Category[];
   tags: Tag[];
   canUploadImages?: boolean;
+  canCuratePlacement?: boolean;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -46,6 +48,8 @@ export function ArticleForm({
   const [categoryId, setCategoryId] = useState(initial?.categoryId ?? categories[0]?.id ?? "");
   const [tagIds, setTagIds] = useState<string[]>(initial?.tagIds ?? []);
   const [isPremium, setIsPremium] = useState(initial?.isPremium ?? false);
+  const [featured, setFeatured] = useState<"" | "lead" | "headline">(initial?.featured ?? "");
+  const [isBreaking, setIsBreaking] = useState(initial?.isBreaking ?? false);
   const [seoTitle, setSeoTitle] = useState(initial?.seoTitle ?? "");
   const [seoDescription, setSeoDescription] = useState(initial?.seoDescription ?? "");
 
@@ -84,6 +88,8 @@ export function ArticleForm({
       categoryId,
       tagIds,
       isPremium,
+      featured: featured || null,
+      isBreaking,
       seoTitle,
       seoDescription,
     };
@@ -168,6 +174,36 @@ export function ArticleForm({
           </Label>
         </div>
       </div>
+
+      {canCuratePlacement && (
+        <div className="grid grid-cols-1 gap-6 rounded-lg border border-line p-4 sm:grid-cols-2">
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="featured">Homepage placement</Label>
+            <select
+              id="featured"
+              value={featured}
+              onChange={(e) => setFeatured(e.target.value as "" | "lead" | "headline")}
+              className="w-full rounded-lg border border-black/15 px-3.5 py-2.5 text-[14.5px] text-ink outline-none focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/30"
+            >
+              <option value="">Not featured (chronological)</option>
+              <option value="lead">Top story (homepage lead)</option>
+              <option value="headline">Headline</option>
+            </select>
+          </div>
+          <div className="flex items-end gap-2 pb-2.5">
+            <input
+              id="isBreaking"
+              type="checkbox"
+              checked={isBreaking}
+              onChange={(e) => setIsBreaking(e.target.checked)}
+              className="h-4 w-4 accent-danger"
+            />
+            <Label htmlFor="isBreaking" className="!text-[14.5px]">
+              Breaking news banner
+            </Label>
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-col gap-1.5">
         <Label>Tags</Label>
