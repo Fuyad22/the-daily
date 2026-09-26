@@ -5,7 +5,7 @@ import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { categories, tags } from "@/db/schema";
-import { requireRole } from "@/lib/auth/dal";
+import { EDITORIAL_ROLES, requireRole, STAFF_ROLES } from "@/lib/auth/dal";
 import { slugify } from "@/lib/articles/slug";
 import type { ActionResult } from "@/lib/articles/actions";
 
@@ -15,7 +15,7 @@ const nameSchema = z.object({
 });
 
 export async function createCategory(input: unknown): Promise<ActionResult> {
-  await requireRole(["editor", "admin"]);
+  await requireRole(EDITORIAL_ROLES);
   const parsed = nameSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
 
@@ -30,7 +30,7 @@ export async function createCategory(input: unknown): Promise<ActionResult> {
 }
 
 export async function deleteCategory(id: string): Promise<ActionResult> {
-  await requireRole(["editor", "admin"]);
+  await requireRole(EDITORIAL_ROLES);
   try {
     await db.delete(categories).where(eq(categories.id, id));
   } catch {
@@ -41,7 +41,7 @@ export async function deleteCategory(id: string): Promise<ActionResult> {
 }
 
 export async function createTag(input: unknown): Promise<ActionResult> {
-  await requireRole(["author", "editor", "admin"]);
+  await requireRole(STAFF_ROLES);
   const parsed = nameSchema.pick({ name: true }).safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
 
@@ -55,7 +55,7 @@ export async function createTag(input: unknown): Promise<ActionResult> {
 }
 
 export async function deleteTag(id: string): Promise<ActionResult> {
-  await requireRole(["editor", "admin"]);
+  await requireRole(EDITORIAL_ROLES);
   await db.delete(tags).where(eq(tags.id, id));
   revalidatePath("/studio/tags");
   return { ok: true };

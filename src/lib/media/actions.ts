@@ -1,7 +1,7 @@
 "use server";
 
 import { put } from "@vercel/blob";
-import { requireRole } from "@/lib/auth/dal";
+import { requireRole, STAFF_ROLES } from "@/lib/auth/dal";
 import { isBlobConfigured } from "@/lib/blob";
 
 const MAX_SIZE = 5 * 1024 * 1024;
@@ -10,7 +10,7 @@ const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 export async function uploadImage(
   formData: FormData
 ): Promise<{ url: string } | { error: string }> {
-  await requireRole(["author", "editor", "admin"]);
+  await requireRole(STAFF_ROLES);
 
   if (!isBlobConfigured()) {
     return { error: "Image upload isn't configured. Paste an image URL instead." };

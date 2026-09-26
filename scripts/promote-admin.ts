@@ -14,7 +14,7 @@ if (!email) {
 async function main() {
   const [updated] = await db
     .update(user)
-    .set({ role: "admin" })
+    .set({ role: "super_admin" })
     .where(eq(user.email, email))
     .returning({ id: user.id, email: user.email });
 
@@ -23,7 +23,7 @@ async function main() {
     process.exit(1);
   }
 
-  console.log(`Promoted ${updated.email} to admin.`);
+  console.log(`Promoted ${updated.email} to super_admin.`);
 }
 
 main()

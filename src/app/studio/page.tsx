@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { requireRole } from "@/lib/auth/dal";
+import { hasRoleAtLeast, requireRole, STAFF_ROLES } from "@/lib/auth/dal";
 import { listArticles } from "@/lib/articles/data";
 import { ArticleStatusPill } from "@/components/status-pill";
 import { buttonVariants } from "@/components/ui/button";
 
 export default async function StudioDashboard() {
-  const user = await requireRole(["author", "editor", "admin"]);
-  const isEditorial = user.role === "editor" || user.role === "admin";
+  const user = await requireRole(STAFF_ROLES);
+  const isEditorial = hasRoleAtLeast(user.role, "editor");
   const recent = await listArticles(isEditorial ? {} : { authorId: user.id });
 
   return (

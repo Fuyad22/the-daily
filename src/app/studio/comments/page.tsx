@@ -1,9 +1,9 @@
-import { requireRole } from "@/lib/auth/dal";
+import { EDITORIAL_ROLES, requireRole } from "@/lib/auth/dal";
 import { listCommentsForModeration } from "@/lib/comments/data";
 import { CommentModerationList } from "./comment-moderation-list";
 
 export default async function StudioCommentsPage() {
-  await requireRole(["editor", "admin"]);
+  await requireRole(EDITORIAL_ROLES);
   const pending = await listCommentsForModeration("pending");
 
   return (

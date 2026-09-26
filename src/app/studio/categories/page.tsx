@@ -1,9 +1,9 @@
-import { requireRole } from "@/lib/auth/dal";
+import { EDITORIAL_ROLES, requireRole } from "@/lib/auth/dal";
 import { listCategories } from "@/lib/articles/data";
 import { CategoryList } from "./category-list";
 
 export default async function CategoriesPage() {
-  await requireRole(["editor", "admin"]);
+  await requireRole(EDITORIAL_ROLES);
   const categories = await listCategories();
 
   return (

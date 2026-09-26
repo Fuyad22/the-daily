@@ -5,7 +5,7 @@ import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { articles, comments, type CommentStatus } from "@/db/schema";
-import { getCurrentUser, requireRole } from "@/lib/auth/dal";
+import { EDITORIAL_ROLES, getCurrentUser, requireRole } from "@/lib/auth/dal";
 import { isRateLimited } from "@/lib/rate-limit";
 import type { ActionResult } from "@/lib/articles/actions";
 
@@ -47,7 +47,7 @@ export async function postComment(input: unknown): Promise<ActionResult> {
 }
 
 export async function moderateComment(id: string, status: CommentStatus): Promise<ActionResult> {
-  const moderator = await requireRole(["editor", "admin"]);
+  const moderator = await requireRole(EDITORIAL_ROLES);
 
   const comment = await db.query.comments.findFirst({
     where: eq(comments.id, id),

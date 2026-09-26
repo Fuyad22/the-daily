@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { requireRole } from "@/lib/auth/dal";
+import { hasRoleAtLeast, requireRole, roleLabel, STAFF_ROLES } from "@/lib/auth/dal";
 
 export default async function StudioLayout({ children }: { children: ReactNode }) {
-  const user = await requireRole(["author", "editor", "admin"]);
-  const isEditorial = user.role === "editor" || user.role === "admin";
+  const user = await requireRole(STAFF_ROLES);
+  const isEditorial = hasRoleAtLeast(user.role, "editor");
 
   return (
     <div className="flex min-h-screen">
@@ -22,10 +22,10 @@ export default async function StudioLayout({ children }: { children: ReactNode }
               <NavLink href="/studio/comments">Comments</NavLink>
             </>
           )}
-          {user.role === "admin" && <NavLink href="/studio/users">Users</NavLink>}
+          {user.role === "super_admin" && <NavLink href="/studio/users">Users</NavLink>}
         </nav>
         <p className="mt-8 text-xs text-muted">
-          Signed in as {user.name} · {user.role}
+          Signed in as {user.name} · {roleLabel(user.role)}
         </p>
       </aside>
       <main className="flex-1 px-8 py-8">{children}</main>
