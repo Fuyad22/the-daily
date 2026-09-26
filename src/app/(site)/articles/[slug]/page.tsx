@@ -4,9 +4,17 @@ import type { Metadata } from "next";
 import { getPublishedArticleBySlug } from "@/lib/articles/public";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { hasPremiumAccess } from "@/lib/subscriptions/access";
+import { isTranslationConfigured } from "@/lib/translate";
 import { formatArticleDate, estimateReadingTime } from "@/lib/format";
 import { buttonVariants } from "@/components/ui/button";
 import { CommentSection } from "@/components/comments/comment-section";
+import {
+  ArticleTranslateProvider,
+  TranslatableBody,
+  TranslatableDek,
+  TranslatableTitle,
+  TranslateToggle,
+} from "@/components/site/article-translate";
 
 export async function generateMetadata({
   params,
@@ -50,6 +58,7 @@ export default async function ArticlePage({
 
   const user = await getCurrentUser();
   const unlocked = article.isPremium ? await hasPremiumAccess(user) : true;
+  const canTranslate = unlocked && isTranslationConfigured();
 
   const baseUrl = process.env.BETTER_AUTH_URL || "http://localhost:3000";
   const jsonLd = {
@@ -72,16 +81,13 @@ export default async function ArticlePage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <article className="mx-auto max-w-4xl px-6 py-12">
+        <ArticleTranslateProvider slug={article.slug}>
         <header className="mx-auto flex max-w-2xl flex-col gap-5">
           <Link href={`/section/${article.category.slug}`} className="label text-ink">
             {article.category.name}
           </Link>
-          <h1 className="font-display text-5xl font-semibold leading-[1.05] tracking-tight text-ink sm:text-6xl">
-            {article.title}
-          </h1>
-          {article.dek && (
-            <p className="font-serif text-xl italic text-muted">{article.dek}</p>
-          )}
+          <TranslatableTitle>{article.title}</TranslatableTitle>
+          {article.dek && <TranslatableDek>{article.dek}</TranslatableDek>}
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 border-y border-line py-3 text-sm text-muted">
             {article.authors.length > 0 && (
               <span>
@@ -104,6 +110,7 @@ export default async function ArticlePage({
               <span>· {estimateReadingTime(article.contentHtml)} min read</span>
             )}
           </div>
+          {canTranslate && <TranslateToggle />}
         </header>
 
         {article.heroImageUrl && (
@@ -117,10 +124,7 @@ export default async function ArticlePage({
 
         <div className="mx-auto max-w-2xl">
           {unlocked ? (
-            <div
-              className="prose-article"
-              dangerouslySetInnerHTML={{ __html: article.contentHtml ?? "" }}
-            />
+            <TranslatableBody>{article.contentHtml ?? ""}</TranslatableBody>
           ) : (
             <div className="flex flex-col gap-6">
               {(article.excerpt || article.dek) && (
@@ -152,6 +156,7 @@ export default async function ArticlePage({
             </div>
           )}
         </div>
+        </ArticleTranslateProvider>
       </article>
       {unlocked && <CommentSection articleId={article.id} />}
     </>

@@ -29,15 +29,23 @@ const ALLOWED_ATTRIBUTES: sanitizeHtml.IOptions["allowedAttributes"] = {
 };
 
 /**
+ * Shared with src/lib/translate.ts: machine-translated HTML gets run back
+ * through this before it's stored, same as editor-authored content.
+ */
+export function sanitizeArticleHtml(html: string): string {
+  return sanitizeHtml(html, {
+    allowedTags: ALLOWED_TAGS,
+    allowedAttributes: ALLOWED_ATTRIBUTES,
+    allowedSchemes: ["http", "https", "mailto"],
+  });
+}
+
+/**
  * Converts a Tiptap JSON document to sanitized HTML. Run only on the server,
  * on save/publish — the public article page renders the stored result
  * directly, so readers never need Tiptap's client JS just to read an article.
  */
 export function renderArticleContent(json: Record<string, unknown>): string {
   const html = generateHTML(json, articleExtensions);
-  return sanitizeHtml(html, {
-    allowedTags: ALLOWED_TAGS,
-    allowedAttributes: ALLOWED_ATTRIBUTES,
-    allowedSchemes: ["http", "https", "mailto"],
-  });
+  return sanitizeArticleHtml(html);
 }

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Domine, Source_Serif_4, Libre_Franklin } from "next/font/google";
+import { Domine, Source_Serif_4, Libre_Franklin, Tiro_Bangla } from "next/font/google";
 import "./globals.css";
 
 const domine = Domine({
@@ -19,6 +19,15 @@ const libreFranklin = Libre_Franklin({
   variable: "--font-libre-franklin",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+});
+
+// Tiro Bangla only ships one weight (regular) — used for machine-translated
+// Bangla text on article pages, applied conditionally in article-translate.tsx.
+const tiroBangla = Tiro_Bangla({
+  variable: "--font-tiro-bangla",
+  subsets: ["bengali"],
+  weight: "400",
+  style: ["normal", "italic"],
 });
 
 const title = "The Daily";
@@ -51,7 +60,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${domine.variable} ${sourceSerif.variable} ${libreFranklin.variable}`}
+      className={`${domine.variable} ${sourceSerif.variable} ${libreFranklin.variable} ${tiroBangla.variable}`}
     >
       <body className="min-h-screen bg-paper font-sans text-ink antialiased">
         {children}

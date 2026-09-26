@@ -26,6 +26,7 @@
   --font-sans: var(--font-libre-franklin);
   --font-display: var(--font-domine);
   --font-serif: var(--font-source-serif);
+  --font-bangla: var(--font-tiro-bangla);
 }
 
 body {
@@ -43,6 +44,13 @@ html {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+/* The "বাংলায় পড়ুন" translate toggle, before a translation exists. */
+.label.lang-bn {
+  font-family: var(--font-bangla);
+  text-transform: none;
+  letter-spacing: normal;
 }
 
 .prose-article {
@@ -65,6 +73,24 @@ html {
 
 .prose-article > * + * {
   margin-top: 1.25em;
+}
+
+/* Machine-translated Bangla body: Tiro Bangla instead of the English display
+   font (which has no Bengali glyphs), and no drop cap — the convention
+   doesn't carry over to Bengali script. */
+.prose-article.lang-bn,
+.prose-article.lang-bn h2,
+.prose-article.lang-bn h3 {
+  font-family: var(--font-bangla);
+}
+
+.prose-article.lang-bn > p:first-child::first-letter {
+  float: none;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: inherit;
+  padding: 0;
 }
 
 .prose-article h2 {
