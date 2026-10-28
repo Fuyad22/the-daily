@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Domine, Source_Serif_4, Libre_Franklin, Tiro_Bangla } from "next/font/google";
+import { Domine, Libre_Baskerville, Libre_Franklin, Tiro_Bangla } from "next/font/google";
 import "./globals.css";
 import { SITE_NAME } from "@/lib/site";
 
@@ -9,10 +9,10 @@ const domine = Domine({
   weight: ["500", "600", "700"],
 });
 
-const sourceSerif = Source_Serif_4({
-  variable: "--font-source-serif",
+const libreBaskerville = Libre_Baskerville({
+  variable: "--font-libre-baskerville",
   subsets: ["latin"],
-  weight: ["400", "600"],
+  weight: ["400", "700"],
   style: ["normal", "italic"],
 });
 
@@ -61,7 +61,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${domine.variable} ${sourceSerif.variable} ${libreFranklin.variable} ${tiroBangla.variable}`}
+      className={`${domine.variable} ${libreBaskerville.variable} ${libreFranklin.variable} ${tiroBangla.variable}`}
     >
       <body className="min-h-screen bg-paper font-sans text-ink antialiased">
         {children}
