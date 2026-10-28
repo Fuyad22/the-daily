@@ -1,6 +1,7 @@
 import { getHomepageFeed } from "@/lib/articles/public";
 import { ArticleCard } from "@/components/site/article-card";
 import { HeadlineListItem } from "@/components/site/headline-list-item";
+import { SITE_NAME } from "@/lib/site";
 
 export default async function HomePage() {
   const { lead, headlines, rest } = await getHomepageFeed();
@@ -10,7 +11,7 @@ export default async function HomePage() {
       <main className="flex min-h-[60vh] flex-col items-center justify-center gap-3 px-6 text-center">
         <p className="label text-muted">Est. 2026</p>
         <h1 className="font-display text-5xl font-semibold tracking-tight text-ink">
-          The Daily
+          {SITE_NAME}
         </h1>
         <p className="max-w-md font-serif text-lg text-muted">
           Independent daily reporting and analysis — launching soon.

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Domine, Source_Serif_4, Libre_Franklin, Tiro_Bangla } from "next/font/google";
 import "./globals.css";
+import { SITE_NAME } from "@/lib/site";
 
 const domine = Domine({
   variable: "--font-domine",
@@ -30,7 +31,7 @@ const tiroBangla = Tiro_Bangla({
   style: ["normal", "italic"],
 });
 
-const title = "The Daily";
+const title = SITE_NAME;
 const description = "Independent daily reporting and analysis.";
 
 export const metadata: Metadata = {

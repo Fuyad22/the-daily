@@ -8,6 +8,7 @@ import { isTranslationConfigured } from "@/lib/translate";
 import { formatArticleDate, estimateReadingTime } from "@/lib/format";
 import { buttonVariants } from "@/components/ui/button";
 import { CommentSection } from "@/components/comments/comment-section";
+import { SITE_NAME } from "@/lib/site";
 import {
   ArticleTranslateProvider,
   TranslatableBody,
@@ -70,7 +71,7 @@ export default async function ArticlePage({
     datePublished: article.publishedAt?.toISOString(),
     dateModified: article.updatedAt.toISOString(),
     author: article.authors.map((a) => ({ "@type": "Person", name: a.user.name })),
-    publisher: { "@type": "Organization", name: "The Daily" },
+    publisher: { "@type": "Organization", name: SITE_NAME },
     mainEntityOfPage: `${baseUrl}/articles/${article.slug}`,
   };
 
@@ -134,7 +135,7 @@ export default async function ArticlePage({
                 <p className="font-display text-lg font-semibold text-ink">
                   This story is for subscribers
                 </p>
-                <p className="mt-1 text-sm text-muted">Subscribe to The Daily to keep reading.</p>
+                <p className="mt-1 text-sm text-muted">Subscribe to {SITE_NAME} to keep reading.</p>
                 <Link href="/subscribe" className={`${buttonVariants()} mt-4`}>
                   Subscribe
                 </Link>

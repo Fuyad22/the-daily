@@ -1,8 +1,8 @@
-# The Daily
+# The Daily Dilemma
 
 A production-quality newspaper platform: article CMS, public reader site, Stripe subscriptions/paywall, and moderated comments.
 
-"The Daily" is a placeholder name — easy to rename before launch.
+The publication name lives in one place: `SITE_NAME` in `src/lib/site.ts`.
 
 ## Stack
 

@@ -1,7 +1,8 @@
 import { ImageResponse } from "next/og";
 import { getPublishedArticleBySlug } from "@/lib/articles/public";
+import { SITE_NAME } from "@/lib/site";
 
-export const alt = "The Daily";
+export const alt = "The Daily Dilemma";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -31,7 +32,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
             letterSpacing: 4,
           }}
         >
-          {article?.category?.name ?? "The Daily"}
+          {article?.category?.name ?? SITE_NAME}
         </div>
         <div
           style={{
@@ -42,7 +43,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
             lineHeight: 1.15,
           }}
         >
-          {article?.title ?? "The Daily"}
+          {article?.title ?? SITE_NAME}
         </div>
       </div>
     ),

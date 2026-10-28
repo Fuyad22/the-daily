@@ -1,5 +1,6 @@
 import "server-only";
 import { Resend } from "resend";
+import { SITE_NAME } from "@/lib/site";
 
 export function isEmailConfigured(): boolean {
   return Boolean(process.env.RESEND_API_KEY);
@@ -20,7 +21,7 @@ async function sendEmail({
   }
 
   const resend = new Resend(process.env.RESEND_API_KEY);
-  const from = process.env.EMAIL_FROM || "The Daily <onboarding@resend.dev>";
+  const from = process.env.EMAIL_FROM || `${SITE_NAME} <onboarding@resend.dev>`;
 
   try {
     await resend.emails.send({ from, to, subject, html });
@@ -32,7 +33,7 @@ async function sendEmail({
 function layout(heading: string, bodyHtml: string): string {
   return `
     <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px;">
-      <p style="font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: #6b6560; margin: 0 0 24px;">The Daily</p>
+      <p style="font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: #6b6560; margin: 0 0 24px;">${SITE_NAME}</p>
       <h1 style="font-size: 20px; margin: 0 0 16px;">${heading}</h1>
       ${bodyHtml}
     </div>
@@ -42,7 +43,7 @@ function layout(heading: string, bodyHtml: string): string {
 export async function sendVerificationEmail(to: string, url: string): Promise<void> {
   await sendEmail({
     to,
-    subject: "Verify your email — The Daily",
+    subject: `Verify your email — ${SITE_NAME}`,
     html: layout(
       "Verify your email",
       `<p style="color: #6b6560; line-height: 1.6;">Confirm this is your email address to finish setting up your account.</p>
@@ -55,7 +56,7 @@ export async function sendVerificationEmail(to: string, url: string): Promise<vo
 export async function sendPasswordResetEmail(to: string, url: string): Promise<void> {
   await sendEmail({
     to,
-    subject: "Reset your password — The Daily",
+    subject: `Reset your password — ${SITE_NAME}`,
     html: layout(
       "Reset your password",
       `<p style="color: #6b6560; line-height: 1.6;">Click below to choose a new password. This link expires in 1 hour.</p>

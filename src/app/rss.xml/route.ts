@@ -1,6 +1,7 @@
 import { and, desc, eq, lte } from "drizzle-orm";
 import { db } from "@/db";
 import { articles } from "@/db/schema";
+import { SITE_NAME } from "@/lib/site";
 
 const BASE_URL = process.env.BETTER_AUTH_URL || "http://localhost:3000";
 
@@ -42,7 +43,7 @@ export async function GET() {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>The Daily</title>
+    <title>${SITE_NAME}</title>
     <link>${BASE_URL}</link>
     <description>Independent daily reporting and analysis.</description>${items}
   </channel>

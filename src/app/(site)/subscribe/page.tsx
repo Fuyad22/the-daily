@@ -3,6 +3,7 @@ import { isStripeConfigured } from "@/lib/stripe";
 import { createCheckoutSession } from "@/lib/subscriptions/actions";
 import { Button } from "@/components/ui/button";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { SITE_NAME } from "@/lib/site";
 
 export const metadata: Metadata = { title: "Subscribe" };
 
@@ -11,7 +12,7 @@ export default function SubscribePage() {
 
   return (
     <main className="mx-auto max-w-xl px-6 py-16 text-center">
-      <h1 className="font-display text-3xl font-semibold text-ink">Subscribe to The Daily</h1>
+      <h1 className="font-display text-3xl font-semibold text-ink">Subscribe to {SITE_NAME}</h1>
       <p className="mt-3 text-muted">Full access to every story, for one monthly price.</p>
       <div className="mx-auto mt-10 max-w-sm rounded-2xl border border-line bg-surface p-8">
         <p className="font-display text-4xl font-semibold text-ink">

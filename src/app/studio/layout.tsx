@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { hasRoleAtLeast, requireRole, roleLabel, STAFF_ROLES } from "@/lib/auth/dal";
+import { SITE_NAME } from "@/lib/site";
 
 export default async function StudioLayout({ children }: { children: ReactNode }) {
   const user = await requireRole(STAFF_ROLES);
@@ -10,7 +11,7 @@ export default async function StudioLayout({ children }: { children: ReactNode }
     <div className="flex min-h-screen">
       <aside className="w-56 shrink-0 border-r border-line bg-surface px-4 py-6">
         <Link href="/" className="mb-8 block font-display text-lg font-semibold text-ink">
-          The Daily
+          {SITE_NAME}
         </Link>
         <nav className="flex flex-col gap-1 text-sm">
           <NavLink href="/studio">Dashboard</NavLink>

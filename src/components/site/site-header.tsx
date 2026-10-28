@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { listCategories } from "@/lib/articles/data";
+import { SITE_NAME } from "@/lib/site";
 
 export async function SiteHeader() {
   const [user, categories] = await Promise.all([
@@ -17,15 +18,15 @@ export async function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-paper/90 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 pt-5 sm:grid sm:grid-cols-3">
-        <p className="label hidden text-muted sm:block">{today}</p>
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 px-6 pt-5 sm:grid sm:grid-cols-[1fr_auto_1fr]">
+        <p className="label hidden text-muted lg:block">{today}</p>
         <Link
           href="/"
-          className="font-display text-3xl font-semibold tracking-tight text-ink sm:justify-self-center sm:text-4xl"
+          className="whitespace-nowrap font-display text-2xl font-semibold tracking-tight text-ink sm:col-start-2 sm:row-start-1 sm:text-3xl lg:text-4xl"
         >
-          The Daily
+          {SITE_NAME}
         </Link>
-        <nav className="flex items-center gap-5 sm:justify-self-end">
+        <nav className="flex items-center gap-5 sm:col-start-3 sm:row-start-1 sm:justify-self-end">
           <Link href="/search" className="label text-muted hover:text-ink">
             Search
           </Link>
