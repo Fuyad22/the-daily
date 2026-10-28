@@ -1,4 +1,4 @@
-# The Daily Dilemma
+# The Daily Issue
 
 A production-quality newspaper platform: article CMS, public reader site, Stripe subscriptions/paywall, and moderated comments.
 

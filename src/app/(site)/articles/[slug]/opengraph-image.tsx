@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { getPublishedArticleBySlug } from "@/lib/articles/public";
 import { SITE_NAME } from "@/lib/site";
 
-export const alt = "The Daily Dilemma";
+export const alt = "The Daily Issue";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
